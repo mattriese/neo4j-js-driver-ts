@@ -1,3 +1,4 @@
+import { Request, Response, NextFunction } from 'express';
 /**
  * Generic error handler.  Output error details as JSON.
  *
@@ -8,10 +9,21 @@
  * @param {express.Response} res
  * @param {express.NextFunction} next
  */
-export default function errorMiddleware(error, req, res, next) {
+interface Error {
+  code?: string;
+  message?: string;
+  trace?: any;
+  details?: any;
+}
+export default function errorMiddleware(
+  error: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   console.log(error);
 
-  res.status(error.code || 500).json({
+  res.send(error.code || 500).json({
     status: 'error',
     code: error.code || 500,
     message: error.message,

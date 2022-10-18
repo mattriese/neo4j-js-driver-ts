@@ -61,7 +61,7 @@ router.get('/:name', async (req, res, next) => {
 router.get('/:name/movies', async (req, res, next) => {
   try {
     const { sort, order, limit, skip } = getPagination(req, MOVIE_SORT);
-    const userId = getUserId(req);
+    const userId = getUserId(req) || '';
     const driver = getDriver();
 
     const movieService = new MovieService(driver);

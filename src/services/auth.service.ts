@@ -3,12 +3,13 @@ import { hash, compare } from 'bcrypt';
 import { user } from '../../test/fixtures/users';
 import ValidationError from '../errors/validation.error';
 import { JWT_SECRET, SALT_ROUNDS } from '../constants';
+import { Driver } from 'neo4j-driver';
 
 export default class AuthService {
   /**
    * @type {neo4j.Driver}
    */
-  driver;
+  driver: Driver;
 
   /**
    * The constructor expects an instance of the Neo4j Driver, which will be
@@ -17,7 +18,7 @@ export default class AuthService {
    * @param {neo4j.Driver} driver
    */
   // tag::constructor[]
-  constructor(driver) {
+  constructor(driver: Driver) {
     this.driver = driver;
   }
   // tag::constructor[]
@@ -37,12 +38,15 @@ export default class AuthService {
    * @returns {Promise<Record<string, any>>}
    */
   // tag::register[]
-  async register(email, plainPassword, name) {
+  async register(email: string, plainPassword: string, name: string) {
     const encrypted = await hash(plainPassword, parseInt(SALT_ROUNDS));
 
     // Open a new session
     const session = this.driver.session();
     // Save user
+    interface Error {
+      code?: string;
+    }
     try {
       const res = await session.writeTransaction((tx) =>
         tx.run(
@@ -64,7 +68,10 @@ export default class AuthService {
         token: jwt.sign(this.userToClaims(safeProperties), JWT_SECRET),
       };
     } catch (e) {
-      if (e.code === 'Neo.ClientError.Schema.ConstraintValidationFailed') {
+      if (
+        (e as Error).code ===
+        'Neo.ClientError.Schema.ConstraintValidationFailed'
+      ) {
         throw new ValidationError(
           `An account already exists with the email address ${email}`,
           {
@@ -72,6 +79,9 @@ export default class AuthService {
           },
         );
       }
+
+      console.log('Unexpected error', e);
+
       throw e;
     } finally {
       session.close();
@@ -100,7 +110,7 @@ export default class AuthService {
    * @returns {Promise<Record<string, any> | false>}    Resolves to a false value when the user is not found or password is incorrect.
    */
   // tag::authenticate[]
-  async authenticate(email, unencryptedPassword) {
+  async authenticate(email: string, unencryptedPassword: string) {
     // Open a new session
     const session = this.driver.session();
 
@@ -145,7 +155,7 @@ export default class AuthService {
    * @param {Record<string, any>} user The User's properties from the database
    * @returns {Record<string, any>} Claims for the token
    */
-  userToClaims(user) {
+  userToClaims(user: Record<string, any>) {
     const { name, userId } = user;
 
     return { sub: userId, userId, name };
@@ -159,7 +169,7 @@ export default class AuthService {
    * @param {Record<string, any>} claims
    * @returns {Promise<Record<string, any>>}  The "safe" properties encoded above
    */
-  async claimsToUser(claims) {
+  async claimsToUser(claims: Record<string, any>) {
     return {
       ...claims,
       userId: claims.sub,

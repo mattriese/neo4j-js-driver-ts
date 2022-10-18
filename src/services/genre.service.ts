@@ -1,6 +1,7 @@
 import { genres } from '../../test/fixtures/genres';
 import NotFoundError from '../errors/not-found.error';
 import { toNativeTypes } from '../utils';
+import { Driver } from 'neo4j-driver';
 
 export default class GenreService {
   /**
@@ -14,7 +15,7 @@ export default class GenreService {
    *
    * @param {neo4j.Driver} driver
    */
-  constructor(driver) {
+  constructor(driver: Driver) {
     this.driver = driver;
   }
 
@@ -56,7 +57,7 @@ export default class GenreService {
    * @returns {Promise<Record<string, any>>}  The genre information
    */
   // tag::find[]
-  async find(name) {
+  async find(name: string) {
     // TODO: Open a new session
     // TODO: Get Genre information from the database
     // TODO: Throw a 404 Error if the genre is not found

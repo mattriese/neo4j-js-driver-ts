@@ -1,5 +1,6 @@
 export default class ValidationError extends Error {
-  constructor(message, details) {
+  details: any;
+  constructor(message: string, details: any, private code: number = 422) {
     super(message);
 
     this.code = 422;

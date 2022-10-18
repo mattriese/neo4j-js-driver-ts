@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import {
   isInt,
   isDate,
@@ -7,6 +8,7 @@ import {
   isLocalTime,
   isDuration,
 } from 'neo4j-driver';
+import { Request } from 'express';
 
 // Valid Order directions
 const ORDER_ASC = 'ASC';
@@ -24,25 +26,30 @@ export const RATING_SORT = ['rating', 'timestamp'];
  * @param {string[]} validSort
  * @returns {Record<string, any>}
  */
-export function getPagination(req, validSort = []) {
+export function getPagination(
+  req: Request,
+  validSort = [] as string[],
+): Record<string, any> {
   let { q, limit, skip, sort, order } = req.query;
 
   // Only accept valid orderby fields
-  if (sort !== undefined && !validSort.includes(sort)) {
+  if (typeof sort === 'string' && !validSort.includes(sort)) {
     sort = undefined;
   }
 
   // Only accept ASC/DESC values
-  if (order === undefined || !ORDERS.includes(order.toUpperCase())) {
+  if (
+    order === undefined ||
+    (typeof order === 'string' && !ORDERS.includes(order.toUpperCase()))
+  ) {
     order = ORDER_ASC;
   }
-
   return {
     q,
     sort,
     order,
-    limit: parseInt(limit || 6),
-    skip: parseInt(skip || 0),
+    limit: parseInt((limit as string) || '6'),
+    skip: parseInt((skip as string) || '0'),
   };
 }
 
@@ -53,8 +60,8 @@ export function getPagination(req, validSort = []) {
  * @param {express.Request} req
  * @returns {string | undefined}
  */
-export function getUserId(req) {
-  return req.user ? req.user.userId : undefined;
+export function getUserId(req: Request): string | undefined {
+  return req.user ? (req.user as any).userId : undefined;
 }
 
 // tag::toNativeTypes[]
@@ -64,7 +71,7 @@ export function getUserId(req) {
  * @param {Record<string, any>} properties
  * @return {Record<string, any>}
  */
-export function toNativeTypes(properties) {
+export function toNativeTypes(properties: Record<string, any>) {
   return Object.fromEntries(
     Object.keys(properties).map((key) => {
       const value = valueToNativeType(properties[key]);
@@ -80,7 +87,7 @@ export function toNativeTypes(properties) {
  * @param {any} value
  * @returns {any}
  */
-function valueToNativeType(value) {
+function valueToNativeType(value: any) {
   if (Array.isArray(value)) {
     value = value.map((innerValue) => valueToNativeType(innerValue));
   } else if (isInt(value)) {

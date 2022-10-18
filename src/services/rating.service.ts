@@ -2,6 +2,7 @@ import { goodfellas } from '../../test/fixtures/movies';
 import { ratings } from '../../test/fixtures/ratings';
 import NotFoundError from '../errors/not-found.error';
 import { toNativeTypes } from '../utils';
+import { Driver, Transaction } from 'neo4j-driver';
 
 // TODO: Import the `int` function from neo4j-driver
 import { int } from 'neo4j-driver';
@@ -18,7 +19,7 @@ export default class ReviewService {
    *
    * @param {neo4j.Driver} driver
    */
-  constructor(driver) {
+  constructor(driver: Driver) {
     this.driver = driver;
   }
 
@@ -39,7 +40,13 @@ export default class ReviewService {
    * @returns {Promise<Record<string, any>>}
    */
   // tag::forMovie[]
-  async forMovie(id, sort = 'timestamp', order = 'ASC', limit = 6, skip = 0) {
+  async forMovie(
+    id: string,
+    sort = 'timestamp',
+    order = 'ASC',
+    limit = 6,
+    skip = 0,
+  ) {
     // TODO: Get ratings for a Movie
 
     return ratings;
@@ -59,9 +66,9 @@ export default class ReviewService {
    * @returns {Promise<Record<string, any>>}  A movie object with a rating property appended
    */
   // tag::add[]
-  async add(userId, movieId, rating) {
+  async add(userId: string, movieId: string, rating: number) {
     // TODO: Convert the native integer into a Neo4j Integer
-    rating = int(rating);
+    const ratingInt = int(rating);
 
     // TODO: Save the rating in the database
     const session = this.driver.session();
@@ -73,7 +80,7 @@ export default class ReviewService {
     MATCH (m:Movie {tmdbId: $movieId})
 
     MERGE (u)-[r:RATED]->(m)
-    SET r.rating = $rating,
+    SET r.rating = $ratingInt,
       r.timestamp = timestamp()
 
     RETURN m {
@@ -81,7 +88,7 @@ export default class ReviewService {
       rating: r.rating
     } AS movie
     `,
-        { userId, movieId, rating },
+        { userId, movieId, ratingInt },
       ),
     );
 

@@ -35,7 +35,7 @@ router.get('/', (req, res, next) => {
 router.get('/favorites', async (req, res, next) => {
   try {
     const driver = getDriver();
-    const userId = getUserId(req);
+    const userId = getUserId(req) || '';
 
     const { sort, order, limit, skip } = getPagination(req, MOVIE_SORT);
 
@@ -59,7 +59,7 @@ router.get('/favorites', async (req, res, next) => {
 router.post('/favorites/:id', async (req, res, next) => {
   try {
     const driver = getDriver();
-    const userId = getUserId(req);
+    const userId = getUserId(req) || '';
 
     const service = new FavoriteService(driver);
     const favorite = await service.add(userId, req.params.id);
@@ -81,7 +81,7 @@ router.post('/favorites/:id', async (req, res, next) => {
 router.delete('/favorites/:id', async (req, res, next) => {
   try {
     const driver = getDriver();
-    const userId = getUserId(req);
+    const userId = getUserId(req) || '';
 
     const service = new FavoriteService(driver);
     const favorite = await service.remove(userId, req.params.id);
@@ -104,7 +104,7 @@ router.delete('/favorites/:id', async (req, res, next) => {
 router.post('/ratings/:id', async (req, res, next) => {
   try {
     const driver = getDriver();
-    const userId = getUserId(req);
+    const userId = getUserId(req) || '';
 
     const service = new RatingService(driver);
     const rated = await service.add(

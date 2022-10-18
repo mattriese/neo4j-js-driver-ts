@@ -24,7 +24,7 @@ app.use(bodyParser.json());
 // Connect to Neo4j and Verify Connectivity
 const { NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD } = process.env;
 
-initDriver(NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD);
+initDriver(NEO4J_URI || '', NEO4J_USERNAME || '', NEO4J_PASSWORD || '');
 
 // Serve the UI
 app.use(express.static('public'));

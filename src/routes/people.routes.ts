@@ -76,7 +76,7 @@ router.get('/:id/similar', async (req, res, next) => {
 router.get('/:id/acted', async (req, res, next) => {
   try {
     const { id } = req.params;
-    const userId = getUserId(req);
+    const userId = getUserId(req) || '';
     const { sort, order, limit, skip } = getPagination(req, MOVIE_SORT);
     const driver = getDriver();
 

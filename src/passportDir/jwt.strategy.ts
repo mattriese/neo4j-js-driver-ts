@@ -1,4 +1,5 @@
 import { config } from 'dotenv';
+import { Request } from 'express';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { JWT_SECRET } from '../constants';
 import { getDriver } from '../neo4j';
@@ -31,7 +32,7 @@ export const JwtStrategy = new Strategy(
     passReqToCallback: true, // Passing the request to the callback allows us to use the open transaction
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   },
-  async (req, claims, done) => {
+  async (req: Request, claims: any, done: any) => {
     const driver = getDriver();
     const authService = new AuthService(driver);
 

@@ -2,6 +2,7 @@ import { goodfellas, popular } from '../../test/fixtures/movies';
 import { roles } from '../../test/fixtures/people';
 import { toNativeTypes } from '../utils';
 import NotFoundError from '../errors/not-found.error';
+import { Driver, Transaction } from 'neo4j-driver';
 
 // TODO: Import the `int` function from neo4j-driver
 import { int } from 'neo4j-driver';
@@ -18,7 +19,7 @@ export default class MovieService {
    *
    * @param {neo4j.Driver} driver
    */
-  constructor(driver) {
+  constructor(driver: Driver) {
     this.driver = driver;
   }
 
@@ -101,12 +102,12 @@ export default class MovieService {
    */
   // tag::getByGenre[]
   async getByGenre(
-    name,
+    name: string,
     sort = 'title',
     order = 'ASC',
     limit = 6,
     skip = 0,
-    userId = undefined,
+    userId: string | undefined = undefined,
   ) {
     // TODO: Get Movies in a Genre
     // MATCH (m:Movie)-[:IN_GENRE]->(:Genre {name: $name})
@@ -138,12 +139,12 @@ export default class MovieService {
    */
   // tag::getForActor[]
   async getForActor(
-    id,
+    id: string,
     sort = 'title',
     order = 'ASC',
     limit = 6,
     skip = 0,
-    userId = undefined,
+    userId: string | undefined = undefined,
   ) {
     // TODO: Get Movies acted in by a Person
     // MATCH (:Person {tmdbId: $id})-[:ACTED_IN]->(m:Movie)
@@ -175,12 +176,12 @@ export default class MovieService {
    */
   // tag::getForDirector[]
   async getForDirector(
-    id,
+    id: string,
     sort = 'title',
     order = 'ASC',
     limit = 6,
     skip = 0,
-    userId = undefined,
+    userId: string | undefined = undefined,
   ) {
     // TODO: Get Movies directed by a Person
     // MATCH (:Person {tmdbId: $id})-[:DIRECTED]->(m:Movie)
@@ -203,7 +204,7 @@ export default class MovieService {
    * @returns {Promise<Record<string, any>>}
    */
   // tag::findById[]
-  async findById(id, userId = undefined) {
+  async findById(id: string, userId = undefined) {
     // TODO: Find a movie by its ID
     // MATCH (m:Movie {tmdbId: $id})
 
@@ -232,7 +233,7 @@ export default class MovieService {
    * @returns {Promise<Record<string, any>[]>}
    */
   // tag::getSimilarMovies[]
-  async getSimilarMovies(id, limit = 6, skip = 0, userId = undefined) {
+  async getSimilarMovies(id: string, limit = 6, skip = 0, userId = undefined) {
     // TODO: Get similar movies based on genres or ratings
 
     return popular.slice(skip, skip + limit).map((item) => ({
@@ -252,7 +253,7 @@ export default class MovieService {
    * @returns {Promise<string[]>}
    */
   // tag::getUserFavorites[]
-  async getUserFavorites(tx, userId) {
+  async getUserFavorites(tx: Transaction, userId: string | undefined) {
     if (userId !== undefined) {
       const favoriteResult = await tx.run(
         `

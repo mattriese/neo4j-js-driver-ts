@@ -5,6 +5,7 @@ import { toNativeTypes } from '../utils';
 
 import { goodfellas, popular } from '../../test/fixtures/movies';
 import { int } from 'neo4j-driver';
+import { Driver } from 'neo4j-driver';
 
 export default class FavoriteService {
   /**
@@ -18,7 +19,7 @@ export default class FavoriteService {
    *
    * @param {neo4j.Driver} driver
    */
-  constructor(driver) {
+  constructor(driver: Driver) {
     this.driver = driver;
   }
 
@@ -40,7 +41,13 @@ export default class FavoriteService {
    * @returns {Promise<Record<string, any>[]>}  An array of Movie objects
    */
   // tag::all[]
-  async all(userId, sort = 'title', order = 'ASC', limit = 6, skip = 0) {
+  async all(
+    userId: string,
+    sort = 'title',
+    order = 'ASC',
+    limit = 6,
+    skip = 0,
+  ) {
     //  Open a new session
     const session = this.driver.session();
     // Retrieve a list of movies favorited by the user
@@ -79,7 +86,7 @@ export default class FavoriteService {
    * @returns {Promise<string, any>} The updated movie record with `favorite` set to true
    */
   // tag::add[]
-  async add(userId, movieId) {
+  async add(userId: string, movieId: string) {
     // Open a new Session
     const session = this.driver.session();
 
@@ -120,7 +127,7 @@ export default class FavoriteService {
    * @returns {Promise<string, any>} The updated movie record with `favorite` set to true
    */
   // tag::remove[]
-  async remove(userId, movieId) {
+  async remove(userId: string, movieId: string) {
     // Open a new Session
     const session = this.driver.session();
 

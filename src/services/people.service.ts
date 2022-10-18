@@ -1,7 +1,7 @@
 import NotFoundError from '../errors/not-found.error';
 import { pacino, people } from '../../test/fixtures/people';
 import { toNativeTypes } from '../utils';
-
+import { Driver, Transaction } from 'neo4j-driver';
 // TODO: Import the `int` function from neo4j-driver
 
 export default class PeopleService {
@@ -16,7 +16,7 @@ export default class PeopleService {
    *
    * @param {neo4j.Driver} driver
    */
-  constructor(driver) {
+  constructor(driver: Driver) {
     this.driver = driver;
   }
 
@@ -37,7 +37,13 @@ export default class PeopleService {
    * @returns {Promise<Record<string, any>[]>}
    */
   // tag::all[]
-  async all(q, sort = 'name', order = 'ASC', limit = 6, skip = 0) {
+  async all(
+    q: string | undefined,
+    sort = 'name',
+    order = 'ASC',
+    limit = 6,
+    skip = 0,
+  ) {
     // TODO: Get a list of people from the database
 
     return people.slice(skip, skip + limit);
@@ -54,7 +60,7 @@ export default class PeopleService {
    * @returns {Promise<Record<string, any>>}
    */
   // tag::findById[]
-  async findById(id) {
+  async findById(id: string) {
     // TODO: Find a user by their ID
 
     return pacino;
@@ -72,7 +78,7 @@ export default class PeopleService {
    * @returns {Promise<Record<string, any>[]>}
    */
   // tag::getSimilarPeople[]
-  async getSimilarPeople(id, limit = 6, skip = 0) {
+  async getSimilarPeople(id: string, limit = 6, skip = 0) {
     // TODO: Get a list of similar people to the person by their id
 
     return people.slice(skip, skip + limit);

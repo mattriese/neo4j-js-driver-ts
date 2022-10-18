@@ -14,7 +14,7 @@ const router = Router();
  */
 router.get('/', (req, res) => {
   const driver = getDriver() !== undefined;
-  const transactions = req.transaction !== undefined;
+  const transactions = 'transaction' in req && req.transaction !== undefined;
   const register = false;
   const handleConstraintErrors = false;
   const authentication = false;
