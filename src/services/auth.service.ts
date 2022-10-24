@@ -3,7 +3,7 @@ import { hash, compare } from 'bcrypt';
 import { user } from '../../test/fixtures/users';
 import ValidationError from '../errors/validation.error';
 import { JWT_SECRET, SALT_ROUNDS } from '../constants';
-import { Driver } from 'neo4j-driver';
+import { Driver, QueryResult } from 'neo4j-driver';
 
 export default class AuthService {
   /**
@@ -48,7 +48,7 @@ export default class AuthService {
       code?: string;
     }
     try {
-      const res = await session.writeTransaction((tx) =>
+      const res: QueryResult = await session.writeTransaction((tx) =>
         tx.run(
           `CREATE (u:User {
             userId: randomUuid(),

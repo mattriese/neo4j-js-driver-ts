@@ -264,7 +264,8 @@ export default class MovieService {
       );
 
       // Extract the `id` value returned by the cypher query
-      return favoriteResult.records.map((row) => row.get('id'));
+      const retval = favoriteResult.records.map((row) => row.get('id'));
+      return retval;
     }
 
     // If userId is not defined, return an empty array
